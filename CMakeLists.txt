@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 PROJECT(TestOscpack)
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
 # separate versions of NetworkingUtils.cpp and UdpSocket.cpp are provided for Win32 and POSIX
 # the IpSystemTypePath selects the correct ones based on the current platform
