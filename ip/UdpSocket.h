@@ -122,7 +122,7 @@ public:
 
 	// Bind a local endpoint to receive incoming data. Endpoint
 	// can be 'any' for the system to choose an endpoint
-	void Bind( const IpEndpointName& localEndpoint );
+	void Bind( const IpEndpointName& localEndpoint, bool allowReuse = false );
 	bool IsBound() const;
 
     std::size_t ReceiveFrom( IpEndpointName& remoteEndpoint, char *data, std::size_t size );
@@ -155,10 +155,10 @@ class UdpListeningReceiveSocket : public UdpSocket{
     SocketReceiveMultiplexer mux_;
     PacketListener *listener_;
 public:
-	UdpListeningReceiveSocket( const IpEndpointName& localEndpoint, PacketListener *listener )
+	UdpListeningReceiveSocket( const IpEndpointName& localEndpoint, PacketListener *listener, bool allowReuse = false )
         : listener_( listener )
     {
-        Bind( localEndpoint );
+        Bind( localEndpoint, allowReuse );
         mux_.AttachSocketListener( this, listener_ );
     }
 

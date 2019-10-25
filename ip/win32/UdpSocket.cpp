@@ -207,10 +207,12 @@ public:
         sendto( socket_, data, (int)size, 0, (sockaddr*)&sendToAddr_, sizeof(sendToAddr_) );
 	}
 
-	void Bind( const IpEndpointName& localEndpoint )
+	void Bind( const IpEndpointName& localEndpoint, bool allowReuse )
 	{
 		struct sockaddr_in bindSockAddr;
 		SockaddrFromIpEndpointName( bindSockAddr, localEndpoint );
+
+		SetAllowReuse( allowReuse );
 
         if (bind(socket_, (struct sockaddr *)&bindSockAddr, sizeof(bindSockAddr)) < 0) {
             throw std::runtime_error("unable to bind udp socket\n");

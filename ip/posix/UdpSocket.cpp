@@ -56,6 +56,7 @@
 #include <cstring> // for memset
 #include <stdexcept>
 #include <vector>
+#include <atomic>
 
 #include "ip/PacketListener.h"
 #include "ip/TimerListener.h"
@@ -214,10 +215,12 @@ public:
         sendto( socket_, data, size, 0, (sockaddr*)&sendToAddr_, sizeof(sendToAddr_) );
 	}
 
-	void Bind( const IpEndpointName& localEndpoint )
+	void Bind( const IpEndpointName& localEndpoint, bool allowReuse )
 	{
 		struct sockaddr_in bindSockAddr;
 		SockaddrFromIpEndpointName( bindSockAddr, localEndpoint );
+
+        SetAllowReuse( allowReuse );
 
         if (bind(socket_, (struct sockaddr *)&bindSockAddr, sizeof(bindSockAddr)) < 0) {
             throw std::runtime_error("unable to bind udp socket\n");
@@ -289,9 +292,9 @@ void UdpSocket::SendTo( const IpEndpointName& remoteEndpoint, const char *data, 
 	impl_->SendTo( remoteEndpoint, data, size );
 }
 
-void UdpSocket::Bind( const IpEndpointName& localEndpoint )
+void UdpSocket::Bind( const IpEndpointName& localEndpoint, bool allowReuse )
 {
-	impl_->Bind( localEndpoint );
+	impl_->Bind( localEndpoint, allowReuse );
 }
 
 bool UdpSocket::IsBound() const
@@ -337,7 +340,7 @@ class SocketReceiveMultiplexer::Implementation{
 	std::vector< std::pair< PacketListener*, UdpSocket* > > socketListeners_;
 	std::vector< AttachedTimerListener > timerListeners_;
 
-	volatile bool break_;
+	std::atomic<bool> break_;
 	int breakPipe_[2]; // [0] is the reader descriptor and [1] the writer
 
 	double GetCurrentTimeMs() const
